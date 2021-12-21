@@ -25,6 +25,8 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import com.example.android.persistence.AppExecutors;
@@ -127,15 +129,17 @@ public abstract class AppDatabase extends RoomDatabase {
         return mIsDatabaseCreated;
     }
 
+    private static final String TAG = "AppDatabase";
     private static final Migration MIGRATION_1_2 = new Migration(1, 2) {
 
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
+            Log.e(TAG, "start migrate");
             database.execSQL("CREATE VIRTUAL TABLE IF NOT EXISTS `productsFts` USING FTS4("
                 + "`name` TEXT, `description` TEXT, content=`products`)");
             database.execSQL("INSERT INTO productsFts (`rowid`, `name`, `description`) "
                 + "SELECT `id`, `name`, `description` FROM products");
-
+            Log.e(TAG, "end migrate");
         }
     };
 }
